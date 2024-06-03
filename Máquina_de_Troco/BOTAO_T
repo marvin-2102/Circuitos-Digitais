@@ -1,0 +1,35 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+
+ENTITY T IS 
+    PORT (
+        CLOCK, T: IN STD_LOGIC;
+		  PRESS: OUT STD_LOGIC
+         );
+END T;
+
+ARCHITECTURE diff OF T IS
+
+COMPONENT ffd IS
+
+	port (ck, clr, set, d : in  std_logic;
+                       q : out std_logic);
+
+END COMPONENT;
+
+SIGNAL X, Y, W, U, CLR, D0, D1: STD_LOGIC;
+
+BEGIN
+
+U1: ffd PORT MAP(CLOCK, CLR, U, D0, Q1);
+
+U3: ffd PORT MAP(CLOCK, CLR, U, D1, Q2);
+
+
+D0 <= ((NOT Q1 AND Q2)) OR ((NOT Q2 AND T) AND Q1);
+
+D1 <= ((NOT Q1 AND NOT Q2) AND T);
+
+PRESS <= NOT Q1 AND Q2;
+
+END diff;

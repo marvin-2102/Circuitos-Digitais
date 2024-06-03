@@ -1,0 +1,31 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+
+
+ENTITY LD IS
+
+	PORT(S2, S1, S0, LC, CLOCK, Z: IN STD_LOGIC;
+			LED: OUT STD_LOGIC	
+		  );
+END LD;
+
+
+
+ARCHITECTURE LOG OF LD IS
+
+SIGNAL X, Y, U, W: STD_LOGIC;
+
+BEGIN
+
+X <= ((S1 AND S2) AND S0);
+
+Y <= (CLOCK AND NOT X);
+
+U <= X AND Z;
+
+W <= LC AND Y;
+
+
+LED <= W OR Z;
+
+END LOG;

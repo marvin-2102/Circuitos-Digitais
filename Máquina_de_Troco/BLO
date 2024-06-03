@@ -1,0 +1,134 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity BLO is
+    port(
+        ESTADO: IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+		  I1, I2, I3, I4, I5, I6, LC: IN STD_LOGIC;
+		  CLOCK, T, LOAD, CLEAR: IN STD_lOGIC;
+		  V: STD_LOGIC_VECTOR(9 DOWNTO 0);
+		  Q1, Q2, Q3, Q4, Q5, Q6: OUT STD_LOGIC_VECTOR(9 DOWNTO 0)
+    );
+end BLO;
+
+architecture ckt of BLO is
+
+COMPONENT MUX8x10 IS
+
+	 port(
+        i0, i1, i2, i3, i4, i5, i6, i7 : in std_logic_vector(9 downto 0);
+        s : in std_logic_vector(2 downto 0);
+        q : out std_logic_vector(9 downto 0)
+    );
+
+
+END COMPONENT;
+
+COMPONENT SUBTRATOR IS 
+    PORT (
+        A_SB8, B_SB8 : IN STD_LOGIC_VECTOR(9 DOWNTO 0);
+		  O_SB8: OUT STD_LOGIC_VECTOR (9 DOWNTO 0);
+        CO_SB8 : OUT STD_LOGIC
+    );
+END COMPONENT;
+
+COMPONENT CR IS 
+	PORT(
+       CLK, CLR, I1,I2, I3, I4, I5, I6, Z: IN STD_LOGIC; ---(Z É A SAIDA DO COMPARADOR)
+	    IX1, IX2, IX3, IX4, IX5, IX6: OUT STD_LOGIC_VECTOR(9 DOWNTO 0)
+        );
+END COMPONENT;
+
+
+COMPONENT REG10BITS IS
+        PORT(
+                Y: IN STD_LOGIC_VECTOR(9 DOWNTO 0);
+                CLEAR, LOAD, CLOCK: IN STD_LOGIC;
+                S: OUT STD_LOGIC_VECTOR(9 DOWNTO 0)
+             );
+END COMPONENT;
+
+COMPONENT Incrementador IS
+	PORT(
+		A_IN: IN STD_LOGIC_VECTOR (9 DOWNTO 0);
+		S_IN: OUT STD_LOGIC_VECTOR (9 DOWNTO 0);
+		CO_IN: OUT STD_LOGIC
+	);
+END COMPONENT;
+
+COMPONENT Comp10 is
+
+  port (
+    a, b : in  std_logic_vector(9 downto 0);       
+    AmaiorB, AmenorB , AigualB : out std_logic
+	 );     
+END COMPONENT;
+
+COMPONENT MUXX2x1 IS
+
+	PORT(
+		I, V : in std_logic_vector(9 downto 0);
+		T: IN STD_LOGIC;
+		D: OUT STD_LOGIC_VECTOR(9 downto 0)
+		);
+END COMPONENT;
+
+COMPONENT LD IS
+
+	PORT(S2, S1, S0, LC, CLOCK, Z: IN STD_LOGIC;
+			LED: OUT STD_LOGIC	
+		  );
+END COMPONENT;
+
+
+SIGNAL T0, T1, T2, T3, T4, T5, T6, T7, S: STD_LOGIC_VECTOR(9 DOWNTO 0);
+SIGNAL COMP: STD_LOGIC;
+SIGNAL U0: STD_LOGIC_VECTOR (9 DOWNTO 0);
+SIGNAL SUB0, SUBSAIDA: STD_LOGIC_VECTOR(9 DOWNTO 0);
+SIGNAL K0, Z: STD_LOGIC;
+SIGNAL D0, D1REG: STD_LOGIC_VECTOR(9 DOWNTO 0);
+SIGNAL AMAB, AMEB, AIGB, AMAB1, AMEB1, AIGB1: STD_LOGIC;
+
+BEGIN
+
+T0 <= "0000000000";
+T1 <= "0001001000";
+T2 <= "0000110010";
+T3 <= "0000011001";
+T4 <= "0000001010";
+T5 <= "0000000101";
+T6 <= "0000000001";
+T7 <= "0000000000";
+
+X0: MUX8x10 PORT MAP(T0, T1, T2, T3, T4, T5, T6, T7, ESTADO, S);
+
+U0(0) <= (S(0) AND COMP);
+U0(1) <= (S(1) AND COMP);
+U0(2) <= (S(2) AND COMP);
+U0(3) <= (S(3) AND COMP);
+U0(4) <= (S(4) AND COMP);
+U0(5) <= (S(5) AND COMP);
+U0(6) <= (S(6) AND COMP);
+U0(7) <= (S(7) AND COMP);
+U0(8) <= (S(8) AND COMP);
+U0(9) <= (S(9) AND COMP);
+
+X1: SUBTRATOR PORT MAP(D1REG, U0, SUBSAIDA, K0);
+
+X2: MUXX2x1 PORT MAP(SUBSAIDA,V, T, D0);
+
+X3: REG10BITS PORT MAP(D0, CLEAR, LOAD, CLOCK, D1REG);
+
+X4: Comp10 PORT MAP(SUBSAIDA, D1REG, AMAB, AMEB, AIGB);
+
+COMP <= AMEB OR AIGB;
+
+X5 : Comp10 PORT MAP(D1REG, "0000000000", AMAB1, AMEB1, AIGB1);
+
+Z <= AIGB1;
+
+X6: CR PORT MAP(CLOCK, CLEAR, I1, I2, I3, I4, I5, I6, Z, Q1, Q2, Q3, Q4, Q5, Q6);
+
+x7: LD PORT MAP(ESTADO(0), ESTADO(1), ESTADO(2), LC, CLOCK, Z);
+
+end ckt;

@@ -1,0 +1,33 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+
+ENTITY MUXX2x1 IS
+	PORT(
+		I, V : in std_logic_vector(9 downto 0);
+		T: IN STD_LOGIC;
+		D: OUT STD_LOGIC_VECTOR(9 downto 0));
+END MUXX2x1;
+
+ARCHITECTURE slt OF MUXX2x1 IS
+
+SIGNAL X0, X1, Y: STD_LOGIC_VECTOR(9 DOWNTO 0);
+
+
+
+BEGIN
+
+	Y(0) <=( I(0) AND NOT(T) ) OR ( V(0) AND T);
+	Y(1) <=( I(1) AND NOT(T) ) OR ( V(1) AND T);
+	Y(2) <=( I(2) AND NOT(T) ) OR ( V(2) AND T);
+	Y(3) <=( I(3) AND NOT(T) ) OR ( V(3) AND T);
+	Y(4) <=( I(4) AND NOT(T) ) OR ( V(4) AND T);
+	Y(5) <=( I(5) AND NOT(T) ) OR ( V(5) AND T);
+	Y(6) <=( I(6) AND NOT(T) ) OR ( V(6) AND T);
+	Y(7) <=( I(7) AND NOT(T) ) OR ( V(7) AND T);
+	Y(8) <=( I(8) AND NOT(T) ) OR ( V(8) AND T);
+	Y(9) <=( I(9) AND NOT(T) ) OR ( V(9) AND T);
+	
+
+D <= Y(9 DOWNTO 0);
+	
+END slt;
